@@ -32,24 +32,20 @@ jobs:
       - name: Run Trivy on filesystem
         run: trivy fs --exit-code 1 --severity HIGH,CRITICAL .
 
-  build-and-image-scan:
-    name: Build Docker Image & Vulnerability Scan
-    runs-on: ubuntu-24.04
-    needs: trivy-config   # <-- wait until config scan succeeds
-
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Build image from Dockerfile
-        run: docker build -t docker.io/mmzaboys/my-app:${{ github.sha }} .
+      - name: Build image
+        run: docker build -t my-app:${{ github.sha }} .
 
-      - name: Run Trivy vulnerability scanner (image)
+      - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: docker.io/my-organization/my-app:${{ github.sha }}
-          format: table
-          exit-code: 1
+          image-ref: 'my-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
           ignore-unfixed: true
-          vuln-type: os,library
-          severity: CRITICAL,HIGH
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
