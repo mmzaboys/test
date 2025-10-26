@@ -33,11 +33,19 @@ resource "aws_instance" "example" {
   metadata_options {
     http_tokens = "required"
   }
+  
   cpu_options {
     core_count       = 2
     threads_per_core = 2
   }
+ root_block_device {
+    encrypted = true
+  }
 
+  ebs_block_device {
+    device_name = "/dev/sdg"
+    encrypted   = true
+    }
   tags = {
     Name = "tf-example"
   }
